@@ -4,6 +4,7 @@ namespace Artisaninweb\SoapWrapper;
 
 use SoapClient;
 use SoapHeader;
+use SoapFault;
 
 /**
  * Soap Webservice class
@@ -215,7 +216,11 @@ class Service
       $this->setSoapHeaders();
     }
 
-    return call_user_func_array([$this->client, $function], $params);
+    try { 
+      return call_user_func_array([$this->client, $function], $params);
+    } catch (SoapFault $e) { 
+      return (object)["faultcode"=> $e->faultcode, "faultstring"=> $e->faultstring]; 
+    } 
   }
 
   /**
